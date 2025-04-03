@@ -13,7 +13,12 @@ if (!fs.existsSync(LOG_DIR)) {
 // 获取格式化的时间戳
 function getTimestamp(): string {
   const now = new Date();
-  return now.toISOString().replace(/[:.]/g, '-').slice(0, -5);
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  return `${year}-${month}-${day} ${hours}-${minutes}`;
 }
 
 // 创建日志写入流
@@ -38,7 +43,6 @@ interface Config {
   ignoreDirs: string[];
 }
 
-type ProcessData = { title: string } & { [key: string]: string }
 
 const program = new Command();
 
@@ -76,7 +80,7 @@ function getMdxFiles(dir: string): string[] {
 
     if (fs.statSync(fullPath).isDirectory()) {
       files.push(...getMdxFiles(fullPath));
-    } else if (item.endsWith('.mdx')) {
+    } else if (item.endsWith('.mdx') || item.endsWith('.md')) {
       files.push(fullPath);
     }
   }
